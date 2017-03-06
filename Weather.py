@@ -1,10 +1,14 @@
 import requests
 
+from pynq.iop import PMODA
+from pynq.iop import Pmod_TMP2
+
+
 class Weather(object):
 
     def __init__(self):
         self.app_id = '9115ff1468e12338e0b7121be110dafb'
-        self._get_loc()
+        # self._get_loc()
         self._get_weather()
 
     def _get_loc(self):
@@ -23,7 +27,9 @@ class Weather(object):
         #                       +self.app_id)
         # self.temp = weather.json()['main']['temp']
         # self.icons = [weather_dat['icon'] for weather_dat in weather.json()['weather']]
-        self.temp=48.98
+        mytmp = Pmod_TMP2(PMODA)
+        temperature = mytmp.read()
+        self.temp=9.0/5.0 * temperature + 32
 
     def update_weather(self):
        self._get_weather()

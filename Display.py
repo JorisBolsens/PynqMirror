@@ -7,4 +7,4 @@ class Display(object):
         self.hdmi_out.start()
 
     def show_frame(self, frame_array):
-        self.hdmi_out.frame_raw(frame_array)
+        self.hdmi_out.frame_raw(bytearray(frame_array))
