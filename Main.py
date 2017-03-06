@@ -3,11 +3,9 @@ import time
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-
 from pynq.pl import Overlay
 
 from Mirror import Mirror
-
 from Display import Display
 
 Overlay("base.bit").download()
