@@ -34,18 +34,26 @@ class Email(object):
             body_str = ''
             if msg.is_multipart():
                 for part in msg.get_payload():
-                    body = part.get_payload()
-                    if 'base64' in part['Content-Transfer-Encoding']:
-                        body = base64.b64decode(body)
-                    if 'text/html' in part['Content-Type']:
-                        soup = BeautifulSoup(body, "html.parser")
-                        body = soup.get_text()
+                    body = self._process_body(part)
 
                     if isinstance(body,str):
                         body_str += body
 
 
             else:
-                body_str = msg.get_payload()
+                body_str = self._process_body(msg)
+                if isinstance(body, str):
+                    body_str += body
 
             self.mails.append({'Date':date, 'Subject':subject, 'Body':body_str})
+
+    def _process_body(self, part):
+        body = part.get_payload()
+
+        if 'base64' in part['Content-Transfer-Encoding']:
+            body = base64.b64decode(body)
+        if 'text/html' in part['Content-Type']:
+            soup = BeautifulSoup(body, "html.parser")
+            body = soup.get_text()
+
+        return body
