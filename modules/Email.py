@@ -2,6 +2,8 @@ import imaplib
 import email
 import email.header
 import datetime
+import base64
+from bs4 import BeautifulSoup
 
 
 class Email(object):
@@ -19,9 +21,9 @@ class Email(object):
         self.connected = True
 
     def get_mail(self):
-        n = 0
-        while(n < 10):
-            rv, data = self._mail.fetch(self.mids[n], '(RFC822)')
+        n = 1
+        while(n < 11):
+            rv, data = self._mail.fetch(self.mids[len(self.mids) - n], '(RFC822)')
             n+=1
             msg = email.message_from_bytes(data[0][1])
             hdr = email.header.make_header(email.header.decode_header(msg['Subject']))
@@ -33,8 +35,16 @@ class Email(object):
             if msg.is_multipart():
                 for part in msg.get_payload():
                     body = part.get_payload()
+                    if 'base64' in part['Content-Transfer-Encoding']:
+                        body = base64.b64decode(body)
+                    if 'text/html' in part['Content-Type']:
+                        soup = BeautifulSoup(body, "html.parser")
+                        body = soup.get_text()
+
                     if isinstance(body,str):
                         body_str += body
+
+
             else:
                 body_str = msg.get_payload()
 
