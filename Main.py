@@ -1,11 +1,11 @@
-# import time
+import time
 import argparse
 
+import feedparser
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-import os
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from pynq.pl import Overlay
 
 from Mirror import Mirror
@@ -48,6 +48,7 @@ body_font = ImageFont.truetype('RobotoCondensed-Regular.ttf', 15)
 
 emails = mirror.email.mails
 prev_height = 0
+max_subj = 0
 for mail in emails:
     subject = mail['Subject'].strip()
     body = ''.join(e for e in mail['Body'] if e.isalnum() or e.isspace()).strip()
@@ -59,12 +60,29 @@ for mail in emails:
 
     subject_w, subject_h = subject_font.getsize(t_subj)
     body_w, body_h = body_font.getsize(t_body)
+
+    if subject_w > max_subj:
+        max_subj = subject_w
+
     draw.text((50, 80 + prev_height), t_subj, fill=(255,255,255), font=subject_font)
     prev_height += subject_h
     draw.text((50, 80 + prev_height), t_body, fill=(255, 255, 255), font=body_font)
     prev_height += body_h + 10
 
-implt = plt.imshow(image.rotate(90, expand=True))
-plt.show()
+draw.rectangle(((40, 70), (60+max_subj, 90+prev_height)), outline=(255,255,255))
 
-# mirror.display.show_frame(image.rotate(90, expand=True).tobytes())
+feed = feedparser.parse('http://feeds.bbci.co.uk/news/rss.xml?edition=us')
+titles = []
+for entry in feed.entries:
+    titles.append(entry['title'])
+
+# implt = plt.imshow(image.rotate(90, expand=True))
+# plt.show()
+
+news_font = ImageFont.truetype('RobotoCondensed-Regular.ttf', 10)
+for title in titles:
+
+
+mirror.display.show_frame(image.rotate(90, expand=True).tobytes())
+
+time.sleep(20)
