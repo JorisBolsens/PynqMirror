@@ -18,20 +18,16 @@ class Weather(object):
         self.lat = resp.json()['latitude']
 
     def _get_weather(self):
-        self.temp = 48.98
-        # weather=requests.get('http://api.openweathermap.org/data/2.5/weather?lat='
-        #                       +str(self.lat)
-        #                       +'&lon='
-        #                       +str(self.long)
-        #                       +'&units=imperial'
-        #                       +'&appid='
-        #                       +self.app_id)
-        # self.temp = weather.json()['main']['temp']
-        # self.icons = [requests.get('https://openweathermap.org/img/w/'+weather_dat['icon']+'.png') for weather_dat in
-        #                            weather.json()['weather']]
-        # mytmp = Pmod_TMP2(PMODA)
-        # temperature = mytmp.read()
-        # self.temp=9.0/5.0 * temperature + 32
+        weather=requests.get('http://api.openweathermap.org/data/2.5/weather?lat='
+                              +str(self.lat)
+                              +'&lon='
+                              +str(self.long)
+                              +'&units=imperial'
+                              +'&appid='
+                              +self.app_id)
+        self.temp = weather.json()['main']['temp']
+        self.icons = [requests.get('https://openweathermap.org/img/w/'+weather_dat['icon']+'.png') for weather_dat in
+                                   weather.json()['weather']]
 
     def update_weather(self):
        self._get_weather()

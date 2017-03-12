@@ -37,14 +37,14 @@ mirror.email.connect(config.email_user, config.email_pass, config.imap_host)
 mirror.email.get_mail()
 
 image = Image.new('RGB', (1080,1920))
-temp_font = ImageFont.truetype('Roboto-Medium.ttf', 45)
+temp_font = ImageFont.truetype('RobotoMono-Regular.ttf', 20)
 
 draw = ImageDraw.Draw(image)
 wwid, wheight = temp_font.getsize(str(mirror.weather.temp)+'°')
 draw.text((1080-50-(wwid),80), str(mirror.weather.temp)+'°', fill=(255,255,255), font=temp_font)
 
-subject_font = ImageFont.truetype('RobotoCondensed-Regular.ttf', 25)
-body_font = ImageFont.truetype('RobotoCondensed-Regular.ttf', 15)
+subject_font = ImageFont.truetype('RobotoMono-Regular.ttf', 20)
+body_font = ImageFont.truetype('RobotoMono-Regular.ttf', 15)
 
 emails = mirror.email.mails
 prev_height = 0
@@ -76,13 +76,16 @@ titles = []
 for entry in feed.entries:
     titles.append(entry['title'])
 
-# implt = plt.imshow(image.rotate(90, expand=True))
-# plt.show()
+news_font = ImageFont.truetype('RobotoMono-Regular.ttf', 15)
+out = ''
+titles_strings = ' | '.join(titles)
+for s in titles_strings:
+    out += s
+    if len(out) > 50:
+        out = out[len(out) - 50:]
 
-news_font = ImageFont.truetype('RobotoCondensed-Regular.ttf', 10)
-for title in titles:
+    im_c = image.copy()
+    draw_c = ImageDraw.Draw(im_c)
+    draw_c.text((315, 1680), out, font=news_font, fill=(255,255,255))
+    mirror.display.show_frame(im_c.rotate(90, expand=True).tobytes())
 
-
-mirror.display.show_frame(image.rotate(90, expand=True).tobytes())
-
-time.sleep(20)
